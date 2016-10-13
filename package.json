@@ -1,0 +1,33 @@
+{
+  "name"       : "dom",
+  "version"    : "0.0.1",
+  "description": "dom util",
+  "author"     : "4apaev",
+  "repository" : "git",
+  "license"    : "MIT",
+  "main"       : "src/index.js",
+  "scripts": {
+
+    "clear"  :  "rm -f dist/*",
+    "js"     :  "browserify -d src/index.js -o dist/dom.js",
+    "mocha"  :  "browserify -d tests/index.js -o dist/test.js",
+    "pug"    :  "pug -P views -o dist",
+    "copy"   :  "cp node_modules/mocha/mocha.js node_modules/mocha/mocha.css dist",
+    "build"  :  "npm run clear && npm run js && npm run mocha && npm run pug && npm run copy",
+    "watch"  :  "node util/watch.js",
+
+    "es5"   : "babel --presets es2015 dist/dom.js -o dist/dom.es5.js",
+    "min"   : "uglifyjs dist/dom.es5.js --screw-ie8 -c -m -o dist/dom.es5.min.js"
+  },
+
+  "devDependencies": {
+    "mocha": "latest"
+  },
+
+  "dependencies": {
+    "is": "git@github.com:4apaev/is.git#assert",
+    "declare": "git@github.com:4apaev/declare.git#experiment"
+  }
+}
+
+

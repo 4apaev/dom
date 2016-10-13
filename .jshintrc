@@ -1,0 +1,25 @@
+{
+  "indent"      : 2,
+  "maxerr"      : 20,
+  "esversion"   : 6,
+
+  "asi"         : true,
+  "boss"        : true,
+  "forin"       : true,
+  "noarg"       : true,
+  "nonew"       : true,
+  "undef"       : true,
+  "eqeqeq"      : true,
+  "esnext"      : true,
+  "strict"      : true,
+  "noempty"     : true,
+  "quotmark"    : true,
+  "lastsemic"   : true,
+
+  "node"        : true,
+  "module"      : true,
+  "browser"     : true,
+  "browserify"  : true,
+  "global"      : ["describe", "it", "beforeEach", "afterEach"]
+
+}
