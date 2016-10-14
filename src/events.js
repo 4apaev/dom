@@ -1,7 +1,6 @@
 'use strict';
 const is = require('is');
 const STORE = Object.create(null);
-
 exports.on = on;
 exports.off = off;
 exports.STORE = STORE;
@@ -11,7 +10,6 @@ function on(str, cb, ctx) {
   is.func.assert(cb, '[Event:on] second argument must be a function');
 
   const { name, selector } = createEntry(str);
-
   const exec = e => false === cb.call(ctx, e) && stop(e);
   const handler = selector ? e => e.target.matches(selector) && exec(e) : exec;
   const off = () => this.removeEventListener(name, handler, false);
@@ -26,23 +24,21 @@ function off(str, cb, ctx) {
   if (is.empty(STORE[this]))
     return this;
 
-  let type = typeof str
-
+  let type = typeof str;
   if ('undefined' === type)
     return remove(this, [ entry => true ]);
 
   if ('function' === type)
-    return this.off('', str, cb)
+    return this.off('', str, cb);
 
   if ('string' === type) {
     let filters = [];
     let { name, selector } = createEntry(str);
 
-          cb && filters.push(entry => entry.cb === cb);
-         ctx && filters.push(entry => entry.ctx === ctx);
-        name && filters.push(entry => entry.name === name);
+    cb && filters.push(entry => entry.cb === cb);
+    ctx && filters.push(entry => entry.ctx === ctx);
+    name && filters.push(entry => entry.name === name);
     selector && filters.push(entry => entry.selector === selector);
-
     return remove(this, filters);
   }
   return this
@@ -60,9 +56,9 @@ function remove(el, filters) {
   return el;
 }
 
-function createEntry(str, fail) {
-  let [ name, ...rest ] = str.split(' ')
-  let selector = rest.join(' ')
+function createEntry(str) {
+  let [ name, ...rest ] = str.split(' ');
+  let selector = rest.join(' ');
   return { name, selector }
 }
 
