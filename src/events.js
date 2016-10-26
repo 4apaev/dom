@@ -1,9 +1,7 @@
 'use strict';
 const is = require('is');
-const STORE = Object.create(null);
-exports.on = on;
-exports.off = off;
-exports.STORE = STORE;
+const STORE = new Map;
+module.exports = { on, off, STORE };
 
 function on(str, cb, ctx) {
   is.str.assert(str, '[Event:on] first argument must be a string');
@@ -13,15 +11,14 @@ function on(str, cb, ctx) {
   const exec = e => false === cb.call(ctx, e) && stop(e);
   const handler = selector ? e => e.target.matches(selector) && exec(e) : exec;
   const off = () => this.removeEventListener(name, handler, false);
-
-  (STORE[this] || (STORE[this] = [])).push({ name, selector, cb, ctx, off });
-
+  STORE.has(this) || STORE.set(this, []);
+  STORE.get(this).push({ name, selector, cb, ctx, off });
   this.addEventListener(name, handler, false);
   return this;
 }
 
 function off(str, cb, ctx) {
-  if (is.empty(STORE[this]))
+  if (is.empty(STORE.has(this)))
     return this;
 
   let type = typeof str;
@@ -41,18 +38,18 @@ function off(str, cb, ctx) {
     selector && filters.push(entry => entry.selector === selector);
     return remove(this, filters);
   }
-  return this
+  return this;
 }
 
 function remove(el, filters) {
-  let entry, i = -1, store = STORE[el];
+  let entry, i = -1, store = STORE.get(el);
   while (entry = store[++i]) {
     if (filters.every(fn => fn(entry))) {
       entry.off();
       store.splice(i, 1);
       i--;
     }}
-  is.empty(store) && (delete STORE[el]);
+  is.empty(store) && STORE.delete(el);
   return el;
 }
 
