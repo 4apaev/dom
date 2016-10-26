@@ -12,14 +12,9 @@ const html = require('./html');
 const events = require('./events');
 const { insert, append, prepend, after, before } = require('./insert');
 
-///////////////////////// EVENTS
-Element.STORE = events.STORE
-declare.method(Element.prototype,   'on',  events.on);
-declare.method(Element.prototype,   'off', events.off);
-
 ///////////////////////// html
-declare.accessor(Element.prototype, 'html',    html.get, html.set);
 declare.method(Element.prototype,   'empty',   empty);
+declare.accessor(Element.prototype, 'html',    html.get, html.set);
 
 ///////////////////////// insert
 declare.method(Element.prototype,   'insert',  insert);
@@ -42,6 +37,12 @@ declare.alias(Element.prototype, 'lastElementChild',       'last');
 declare.alias(Element.prototype, 'firstElementChild',      'first');
 declare.alias(Element.prototype, 'clientWidth',            'width');
 declare.alias(Element.prototype, 'clientHeight',           'height');
+
+///////////////////////// EVENTS
+Element.STORE = events.STORE
+declare.method(Element.prototype,   'on',  events.on);
+declare.method(Element.prototype,   'off', events.off);
+
 
 ///////////////////////// collections
 'forEach,map,reduce,filter'.split(',').forEach(method => {
