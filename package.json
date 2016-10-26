@@ -3,7 +3,10 @@
   "version"    : "0.0.1",
   "description": "dom util",
   "author"     : "4apaev",
-  "repository" : "git",
+  "repository" : {
+    "type" : "git",
+    "url": "git remote add origin git@github.com:4apaev/dom.git"
+  },
   "license"    : "MIT",
   "main"       : "src/index.js",
   "scripts": {
