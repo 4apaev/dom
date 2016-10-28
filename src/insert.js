@@ -2,7 +2,8 @@
 
 
 exports.insert = function insert(element, position='beforeEnd') {
-  return this[`insertAdjacent${ 1 == element.nodeType ? 'Element': 'HTML' }`](position, element)
+  this[`insertAdjacent${ 1 == element.nodeType ? 'Element': 'HTML' }`](position, element);
+  return this
 }
 
 exports.append = function append(element) {
