@@ -1,6 +1,6 @@
 'use strict';
 const is = require('is');
-const STORE = new Map;
+const STORE = new WeakMap;
 module.exports = { on, off, STORE };
 
 function on(str, cb, ctx) {
