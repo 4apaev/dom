@@ -1,5 +1,5 @@
 const is = require('is')
 
-describe('attrs',  () => {
+describe('Attrs',  () => {
   it('should have "attrs" method', () => is.func.assert(Element.prototype.attrs))
 });

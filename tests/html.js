@@ -1,6 +1,6 @@
-const is = require('is')
+const is = require('is');
 
-describe('html',   () => {
+describe('Html',   () => {
   it('should have "html" property', () => {
     is.own.assert(Element.prototype, 'html')
   })

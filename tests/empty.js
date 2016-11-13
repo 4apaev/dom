@@ -1,7 +1,7 @@
 const is = require('is');
 const equal = is.assert;
 
-describe('empty', () => {
+describe('Empty', () => {
   it('should have "empty" method', () => is.func.assert(Element.prototype.empty));
 
   it('should empty and return element ', () => {

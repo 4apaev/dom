@@ -6,17 +6,11 @@ html
     meta(name='viewport' content='width=device-width')
     title TESTS
     link(rel='stylesheet', href='mocha.css', type='text/css')
-    style.
-      #fixture {position: absolute; top: -9999; left: -9999;};
-
     script(src='dom.js')
     script(src='mocha.js')
     script.
-      window.log = console.log.bind(console)
-      document.addEventListener('DOMContentLoaded', function() {
-        mocha.run()
-      })
-
+      this.log = console.log.bind(console)
+      onload = e => mocha.run()
   body
     #mocha
 
