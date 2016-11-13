@@ -1,14 +1,20 @@
 'use strict';
-const is = require('is');
+const RGX = /(\w+)\s?(.*)?/;
 const STORE = new WeakMap;
-module.exports = { on, off, STORE };
+module.exports = { on, off, once, STORE };
 
 function on(str, cb, ctx) {
-  is.str.assert(str, '[Event:on] first argument must be a string');
-  is.func.assert(cb, '[Event:on] second argument must be a function');
+  if ('string' !== typeof str)
+    throw new TypeError('[ Element.on ] first argument must be a string');
+  if ('function' !== typeof cb)
+    throw new TypeError('[ Element.on ] second argument must be a function');
 
-  const { name, selector } = createEntry(str);
-  const exec = e => false === cb.call(ctx, e) && stop(e);
+  const [ , name, selector ] = str.match(RGX);
+  const exec = e => {
+    if (false === cb.call(ctx, e)) {
+      e.preventDefault();
+      e.stopPropagation();
+    }}
   const handler = selector ? e => e.target.matches(selector) && exec(e) : exec;
   const off = () => this.removeEventListener(name, handler, false);
   STORE.has(this) || STORE.set(this, []);
@@ -18,48 +24,44 @@ function on(str, cb, ctx) {
 }
 
 function off(str, cb, ctx) {
-  if (is.empty(STORE.has(this)))
+  if (!STORE.has(this))
     return this;
 
-  let type = typeof str;
-  if ('undefined' === type)
-    return remove(this, [ entry => true ]);
-
-  if ('function' === type)
-    return this.off('', str, cb);
-
-  if ('string' === type) {
-    let filters = [];
-    let { name, selector } = createEntry(str);
-
-    cb && filters.push(entry => entry.cb === cb);
-    ctx && filters.push(entry => entry.ctx === ctx);
-    name && filters.push(entry => entry.name === name);
-    selector && filters.push(entry => entry.selector === selector);
-    return remove(this, filters);
+  let type = typeof str, store = STORE.get(this);
+  if ('undefined' === type) {
+    store.forEach(e => e.off());
+    STORE.delete(this);
+    return this
   }
-  return this;
-}
 
-function remove(el, filters) {
-  let entry, i = -1, store = STORE.get(el);
-  while (entry = store[++i]) {
-    if (filters.every(fn => fn(entry))) {
-      entry.off();
+  let filters = [];
+  if ('function' === type) {
+    ctx = cb;
+    cb = str;
+    str = null;
+  } else if ('string' === type) {
+    let [ , name, selector ] = str.match(RGX)||[];
+    name && filters.push(e => e.name === name);
+    selector && filters.push(e => e.selector === selector);
+  }
+
+  cb && filters.push(e => e.cb === cb);
+  ctx && filters.push(e => e.ctx === ctx);
+
+  for (let e, i=0; e = store[ i ]; i++) {
+    if (filters.every(fn => fn(e))) {
+      e.off();
       store.splice(i, 1);
       i--;
     }}
-  is.empty(store) && STORE.delete(el);
-  return el;
+  store.length===0 && STORE.delete(this);
+  return this
 }
 
-function createEntry(str) {
-  let [ name, ...rest ] = str.split(' ');
-  let selector = rest.join(' ');
-  return { name, selector }
-}
-
-function stop(e) {
-  e.preventDefault();
-  e.stopPropagation();
+function once(str, cb, ctx) {
+  let func = e => {
+    this.off(str, func);
+    return cb.call(ctx, e);
+  }
+  return this.on(str, func)
 }
