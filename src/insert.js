@@ -1,23 +1,17 @@
 'use strict';
-
-
-exports.insert = function insert(element, position='beforeEnd') {
-  this[`insertAdjacent${ 1 == element.nodeType ? 'Element': 'HTML' }`](position, element);
+exports.insert = function insert(x, position = 'beforeEnd') {
+  this[ x instanceof Element ? 'insertAdjacentElement' : 'insertAdjacentHTML' ](position, x);
   return this
-}
-
-exports.append = function append(element) {
-  return this.insert(element, 'beforeEnd')
-}
-
-exports.prepend = function prepend(element) {
-  return this.insert(element, 'afterBegin')
-}
-
-exports.after = function after(element) {
-  return this.insert(element, 'afterEnd')
-}
-
-exports.before = function before(element) {
-  return this.insert(element, 'beforeBegin')
-}
+};
+exports.append = function append(x) {
+  return this.insert(x, 'beforeEnd')
+};
+exports.prepend = function prepend(x) {
+  return this.insert(x, 'afterBegin')
+};
+exports.after = function after(x) {
+  return this.insert(x, 'afterEnd')
+};
+exports.before = function before(x) {
+  return this.insert(x, 'beforeBegin')
+};
