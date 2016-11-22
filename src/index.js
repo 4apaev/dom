@@ -3,14 +3,17 @@ const { on, once, off, STORE } = require('./events');
 const { insert, append, prepend, before, after } = require('./insert');
 const aliases = require('./aliases');
 
-aliases.forEach(({ terms, src, trg=src }) => {
-  terms.forEach(({ alias, name }) => {
-    declare.alias(src.prototype, name, alias, trg.prototype)
+aliases.forEach(([ src, name, alias, ...targets ]) => {
+  let ctor = self[ src ].prototype
+  targets.forEach(trg => {
+    declare.alias(ctor, name, alias, self[ trg ].prototype)
   })
 });
 
-declare.mute.lock.fix.value(Element, 'STORE', STORE);
+exports.find = document.querySelector.bind(document)
+exports.query = document.querySelectorAll.bind(document)
 
+declare.getter(Element, 'STORE', () => STORE);
 declare.method(Element.prototype, 'on', on);
 declare.method(Element.prototype, 'once', once);
 declare.method(Element.prototype, 'off', off);

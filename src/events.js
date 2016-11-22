@@ -5,16 +5,12 @@ module.exports = { on, off, once, STORE };
 
 function on(str, cb, ctx) {
   if ('string' !== typeof str)
-    throw new TypeError('[ Element.on ] first argument must be a string');
+    throw new TypeError(`"event" must be a string`);
   if ('function' !== typeof cb)
-    throw new TypeError('[ Element.on ] second argument must be a function');
+    throw new TypeError(`"cb" must be a function`);
 
   const [ , name, selector ] = str.match(RGX);
-  const exec = e => {
-    if (false === cb.call(ctx, e)) {
-      e.preventDefault();
-      e.stopPropagation();
-    }}
+  const exec = e => false === cb.call(ctx, e, e.target) && (e.preventDefault(), e.stopPropagation());
   const handler = selector ? e => e.target.matches(selector) && exec(e) : exec;
   const off = () => this.removeEventListener(name, handler, false);
   STORE.has(this) || STORE.set(this, []);
@@ -27,19 +23,13 @@ function off(str, cb, ctx) {
   if (!STORE.has(this))
     return this;
 
-  let type = typeof str, store = STORE.get(this);
-  if ('undefined' === type) {
-    store.forEach(e => e.off());
-    STORE.delete(this);
-    return this
-  }
+  let type = typeof str, store = STORE.get(this), filters = [];
+  if ('undefined'==type)
+    return store.forEach(e => e.off()), STORE.delete(this), this;
 
-  let filters = [];
-  if ('function' === type) {
-    ctx = cb;
-    cb = str;
-    str = null;
-  } else if ('string' === type) {
+  if ('function'==type)
+    ctx = cb, cb = str;
+  else if ('string'==type) {
     let [ , name, selector ] = str.match(RGX)||[];
     name && filters.push(e => e.name === name);
     selector && filters.push(e => e.selector === selector);
@@ -48,20 +38,13 @@ function off(str, cb, ctx) {
   cb && filters.push(e => e.cb === cb);
   ctx && filters.push(e => e.ctx === ctx);
 
-  for (let e, i=0; e = store[ i ]; i++) {
-    if (filters.every(fn => fn(e))) {
-      e.off();
-      store.splice(i, 1);
-      i--;
-    }}
+  for (let e, i=0; e = store[ i ]; i++)
+    filters.every(fn => fn(e = store[ i ])) && (e.off(), store.splice(i, 1), i--);
   store.length===0 && STORE.delete(this);
   return this
 }
 
 function once(str, cb, ctx) {
-  let func = e => {
-    this.off(str, func);
-    return cb.call(ctx, e);
+    let func = e => (this.off(str, func), cb.call(ctx, e, e.target));
+    return this.on(str, func)
   }
-  return this.on(str, func)
-}
