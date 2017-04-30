@@ -1,19 +1,13 @@
 'use strict';
-
-const is = require('is')
-const { keys, create } = Object
+const Is = require('is')
 
 module.exports = attrs
-
 function attrs(name, value) {
-  if (is.def(value))
+  if (Is(value))
     this.setAttribute(name, value)
-
-  else if (is.obj(name))
-    keys(name).forEach(k => this.setAttribute(k, name[k]))
-
+  else if (Is.obj(name))
+    Object.keys(name).forEach(k => this.setAttribute(k, name[ k ]))
   else
     return this.getAttribute(name)
-
   return this
 }
