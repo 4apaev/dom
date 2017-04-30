@@ -1,5 +1,6 @@
 git st
 node_modules
+experiments
 .idea
 *.log
 dist/*
