@@ -1,5 +1,5 @@
-const is = require('is')
+const Is = require('is')
 
 describe('Attrs',  () => {
-  it('should have "attrs" method', () => is.func.assert(Element.prototype.attrs))
+  it('should have "attrs" method', () => Is.must.be.func(Element.prototype.attrs))
 });

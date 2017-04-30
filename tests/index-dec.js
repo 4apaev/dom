@@ -15,20 +15,20 @@ describe('Aliases', $aliases)
 function $aliases() {
   aliases.forEach(([ src, name, alias, ...targets ]) => {
     let Src = window[ src ]
-    let a = declare.getDesc(Src.prototype, name)
+    let a = Object.getOwnPropertyDescriptor(Src.prototype, name)
     targets.forEach(trg => {
       let Trg = window[ trg ]
       it(`${ Trg.name } "${ name }" should have alias "${ alias }"`, () => {
-        let b = declare.getDesc(Trg.prototype, alias)
-        is.own.assert(Trg.prototype, alias)
-        is.equal.assert(a, b)
+        let b = Object.getOwnPropertyDescriptor(Trg.prototype, alias)
+        is.must.own(Trg.prototype, alias)
+        equal(a, b)
       })
     })
   })
 }
 
 function $empty() {
-  it('should have "empty" method', () => is.func.assert(Element.prototype.empty));
+  it('should have "empty" method', () => is.must.func(Element.prototype.empty));
 
   it('should empty and return element ', () => {
     let ul = document.createElement('ul');
@@ -71,17 +71,17 @@ function $events() {
   describe('base', () => {
     let ul = el('ul');
 
-    it('should have "on" method', () => is.func.assert(Element.prototype.on));
-    it('should have "off" method', () => is.func.assert(Element.prototype.off));
+    it('should have "on" method', () => is.must.func(Element.prototype.on));
+    it('should have "off" method', () => is.must.func(Element.prototype.off));
 
     it('should throw when called without event name', () => {
       let err = fail(ul.on, [], ul);
-      equal(is(err), 'Error')
+      is.must.be.err(err)
     });
 
     it('should throw when called without callback', () => {
       let err = fail(ul.on, [ 'click' ], ul);
-      equal(is(err), 'Error')
+      is.must.be.err(err)
     })
   });
 
@@ -91,7 +91,6 @@ function $events() {
       let ctx = {};
       let ret = div.on('click', function (e) {
         equal(this, ctx);
-        equal(is(e), 'MouseEvent')
       }, ctx);
 
       div.click();
@@ -203,9 +202,9 @@ function $insert() {
 
   const eq = expect => (a, b) => {
       let { first, last, count } = node;
-      is.assert(count, 2);
-      is.assert(a, expect(first));
-      is.assert(b, expect(last));
+      equal(count, 2);
+      equal(a, expect(first));
+      equal(b, expect(last));
     }
 
   exec('element', el, eq(identity))
@@ -229,7 +228,7 @@ function $insert() {
 
 function $html() {
   it('should have "html" property', () => {
-    is.own.assert(Element.prototype, 'html')
+    is.must.own(Element.prototype, 'html')
   })
 }
 

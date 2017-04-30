@@ -1,6 +1,6 @@
-const is = require('is');
+const Is = require('is');
 const fail = require('../util/fail');
-const equal = is.assert;
+
 
 describe('Events', () => {
   const el = x => document.createElement(x)
@@ -8,17 +8,17 @@ describe('Events', () => {
   describe('base', () => {
     let ul = el('ul');
 
-    it('should have "on" method', () => is.func.assert(Element.prototype.on));
-    it('should have "off" method', () => is.func.assert(Element.prototype.off));
+    it('should have "on" method', () => Is.must.be.func(Element.prototype.on));
+    it('should have "off" method', () => Is.must.be.func(Element.prototype.off));
 
     it('should throw when called without event name', () => {
       let err = fail(ul.on, [], ul);
-      equal(is(err), 'Error')
+      Is.must.be.err(err)
     });
 
     it('should throw when called without callback', () => {
       let err = fail(ul.on, [ 'click' ], ul);
-      equal(is(err), 'Error')
+      Is.must.be.err(err)
     })
   });
 
@@ -27,19 +27,18 @@ describe('Events', () => {
       let div = el('div');
       let ctx = {};
       let ret = div.on('click', function (e) {
-        equal(this, ctx);
-        equal(is(e), 'MouseEvent')
+        Is.assert(this, ctx);
       }, ctx);
 
       div.click();
-      equal(ret, div)
+      Is.assert(ret, div)
     });
     it('should delegate event', () => {
       let div = el('div');
       div.innerHTML = '<p></p><b></b>';
 
-      div.on('click p', e => equal(e.target.nodeName, 'P'));
-      div.on('click b', e => equal(e.target.nodeName, 'B'));
+      div.on('click p', e => Is.assert(e.target.nodeName, 'P'));
+      div.on('click b', e => Is.assert(e.target.nodeName, 'B'));
 
       div.firstElementChild.click();
       div.lastElementChild.click();
@@ -52,9 +51,9 @@ describe('Events', () => {
     div.once('click', e => count += 1);
     it('should emit once', () => {
       div.click();
-      equal(1, count);
+      Is.assert(1, count);
       div.click();
-      equal(1, count);
+      Is.assert(1, count);
     })
   });
 
@@ -90,8 +89,8 @@ describe('Events', () => {
       div.off('click');
       emit('click', p);
       emit('click', b);
-      equal(count.click.p, 1);
-      equal(count.click.b, 1)
+      Is.assert(count.click.p, 1);
+      Is.assert(count.click.b, 1)
     });
 
     it('should remove dblclick with selector', () => {
@@ -100,8 +99,8 @@ describe('Events', () => {
       div.off('dblclick p');
       emit('dblclick', p);
       emit('dblclick', b);
-      equal(count.dblclick.p, 1);
-      equal(count.dblclick.b, 2)
+      Is.assert(count.dblclick.p, 1);
+      Is.assert(count.dblclick.b, 2)
     });
 
     it('should remove by callback', () => {
@@ -110,7 +109,7 @@ describe('Events', () => {
       div.off(cb);
       emit('wheel', p);
       emit('wheel', b);
-      equal(count.cb, 2)
+      Is.assert(count.cb, 2)
     });
 
     it('should remove all', () => {
@@ -121,11 +120,11 @@ describe('Events', () => {
       emit('dblclick', b);
       emit('wheel', p);
       emit('wheel', b);
-      equal(count.click.p, 1);
-      equal(count.click.b, 1);
-      equal(count.dblclick.p, 1);
-      equal(count.dblclick.b, 2);
-      equal(count.cb, 2)
+      Is.assert(count.click.p, 1);
+      Is.assert(count.click.b, 1);
+      Is.assert(count.dblclick.p, 1);
+      Is.assert(count.dblclick.b, 2);
+      Is.assert(count.cb, 2)
     })
   });
 });

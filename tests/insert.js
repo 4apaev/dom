@@ -1,4 +1,4 @@
-const is = require('is')
+const Is = require('is')
 
 describe('Insert', () => {
   const el = x => document.createElement(x)
@@ -10,9 +10,9 @@ describe('Insert', () => {
 
   const eq = expect => (a, b) => {
       let { first, last, count } = node;
-      is.assert(count, 2);
-      is.assert(a, expect(first));
-      is.assert(b, expect(last));
+      Is.assert(count, 2);
+      Is.assert(a, expect(first));
+      Is.assert(b, expect(last));
     }
 
   exec('element', el, eq(identity))

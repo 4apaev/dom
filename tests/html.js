@@ -1,8 +1,8 @@
-const is = require('is');
+const Is = require('is');
 
 describe('Html',   () => {
   it('should have "html" property', () => {
-    is.own.assert(Element.prototype, 'html')
+    Is.must.own(Element.prototype, 'html')
   })
 });
 

@@ -1,17 +1,19 @@
-const is = require('is')
-const getDesc = require('declare').getDesc;
+const Is = require('is')
 const aliases = require('../src/aliases')
+const { keys, getOwnPropertyDescriptor } = Object
 
 describe('Alias',  () => {
   aliases.forEach(([ src, name, alias, ...targets ]) => {
-    let Src = window[ src ]
-    let a = declare.getDesc(Src.prototype, name)
+    let Src = window[ src ],
+        a = getOwnPropertyDescriptor(Src.prototype, name)
+
     targets.forEach(trg => {
-      let Trg = window[ trg ]
+      let Trg = window[ trg ],
+          b = getOwnPropertyDescriptor(Trg.prototype, alias)
+
       it(`${ Trg.name } "${ name }" should have alias "${ alias }"`, () => {
-        let b = declare.getDesc(Trg.prototype, alias)
-        is.own.assert(Trg.prototype, alias)
-        is.equal.assert(a, b)
+        Is.must.own(Trg.prototype, alias)
+        Is.assert(keys(b).every(k => a[ k ]===b[ k ]), true)
       })
     })
   })

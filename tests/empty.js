@@ -1,8 +1,8 @@
-const is = require('is');
-const equal = is.assert;
+const Is = require('is');
+
 
 describe('Empty', () => {
-  it('should have "empty" method', () => is.func.assert(Element.prototype.empty));
+  it('should have "empty" method', () => Is.must.be.func(Element.prototype.empty));
 
   it('should empty and return element ', () => {
     let ul = document.createElement('ul');
@@ -12,10 +12,10 @@ describe('Empty', () => {
       <li>b</li>
       <li>c</li>`;
 
-    equal(ul.children.length, 3);
-    equal(ul.empty(), ul);
-    equal(ul.children.length, 0);
-    equal(ul.innerHTML, '')
+    Is.assert(ul.children.length, 3);
+    Is.assert(ul.empty(), ul);
+    Is.assert(ul.children.length, 0);
+    Is.assert(ul.innerHTML, '')
   });
 
   it('should remove all events listeners if children has any ', () => {
@@ -30,11 +30,11 @@ describe('Empty', () => {
     for (let li of ul.children)
       li.on('click', e => count += 1).click()
 
-    equal(count, 3);
-    equal(ul.empty(), ul);
+    Is.assert(count, 3);
+    Is.assert(ul.empty(), ul);
 
     for (let li of ul.children)
       li.click()
-    equal(count, 3)
+    Is.assert(count, 3)
   })
 });
