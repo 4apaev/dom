@@ -28,8 +28,8 @@
   },
 
   "dependencies": {
-    "is": "git@github.com:4apaev/is.git#assert",
-    "declare": "git@github.com:4apaev/declare.git#experiment"
+    "is": "git@github.com:4apaev/is.git#mini",
+    "declare": "git@github.com:4apaev/declare.git#mini"
   }
 }
 
