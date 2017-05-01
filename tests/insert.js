@@ -3,33 +3,87 @@ const Is = require('is')
 describe('Insert', () => {
   const el = x => document.createElement(x)
   const tag = x => `<${ x }></${ x }>`
-  const node = el('div')
 
-  const outer = x => x.HTML
-  const identity = x => x
+  it(`should insert html`, () => {
+    const node = el('div')
+    Is.assert(node.insert(tag('b')), node);
+    Is.assert(node.lastElementChild.tagName, 'B');
+    Is.assert(node.childElementCount, 1);
+  })
+  it(`should insert el`, () => {
+    const node = el('div')
+    Is.assert(node.insert(el('b')), node);
+    Is.assert(node.lastElementChild.tagName, 'B');
+    Is.assert(node.childElementCount, 1);
+  })
 
-  const eq = expect => (a, b) => {
-      let { first, last, count } = node;
-      Is.assert(count, 2);
-      Is.assert(a, expect(first));
-      Is.assert(b, expect(last));
-    }
+  it(`should append html`, () => {
+    const node = el('div')
+    node.insert(el('i'))
 
-  exec('element', el, eq(identity))
-  exec('string', tag, eq(outer))
+    Is.assert(node.append(tag('b')), node);
+    Is.assert(node.lastElementChild.tagName, 'B');
+    Is.assert(node.childElementCount, 2);
+  })
+  it(`should append el`, () => {
+    const node = el('div')
+    node.insert(el('i'))
 
-  function exec(term, make, equal, a, b) {
-    describe(term, () => {
-      beforeEach(() => {
-        a = make('a')
-        b = make('b')
-        node.empty()
-      })
-      afterEach(() => equal(a, b))
-      it(`should append  "a" and "b" ${ term } to node`,       () => node.append(a).append(b))
-      it(`should prepend "b" and "a" ${ term } to node`,       () => node.append(b).prepend(a))
-      it(`should insert  "a" ${ term }, before "b" ${ term }`, () => node.append(b).first.before(a))
-      it(`should insert  "b" ${ term }, after "a" ${ term }`,  () => node.append(a).first.after(b))
-    });
-  }
+    Is.assert(node.append(el('b')), node);
+    Is.assert(node.lastElementChild.tagName, 'B');
+    Is.assert(node.childElementCount, 2);
+  })
+
+
+  it(`should prepend html`, () => {
+    const node = el('div')
+    node.insert(el('i'))
+    Is.assert(node.prepend(tag('b')), node);
+    Is.assert(node.firstElementChild.tagName, 'B');
+    Is.assert(node.childElementCount, 2);
+  })
+  it(`should prepend el`, () => {
+    const node = el('div')
+    node.insert(el('i'))
+    Is.assert(node.prepend(el('b')), node);
+    Is.assert(node.firstElementChild.tagName, 'B');
+    Is.assert(node.childElementCount, 2);
+  })
+
+
+  it(`should insert html before`, () => {
+    const div = el('div')
+    const node = el('i')
+    div.insert(node)
+    Is.assert(node.before(tag('b')), node);
+    Is.assert(div.firstElementChild.tagName, 'B');
+    Is.assert(div.childElementCount, 2);
+  })
+  it(`should insert el before`, () => {
+    const div = el('div')
+    const node = el('i')
+    div.insert(node)
+    Is.assert(node.before(el('b')), node);
+    Is.assert(div.firstElementChild.tagName, 'B');
+    Is.assert(div.childElementCount, 2);
+  })
+
+  it(`should insert html after`, () => {
+    const div = el('div')
+    const node = el('i')
+    div.insert(node)
+    Is.assert(node.after(tag('b')), node);
+    Is.assert(div.lastElementChild.tagName, 'B');
+    Is.assert(div.childElementCount, 2);
+  })
+  it(`should insert el after`, () => {
+    const div = el('div')
+    const node = el('i')
+    div.insert(node)
+    Is.assert(node.after(el('b')), node);
+    Is.assert(div.lastElementChild.tagName, 'B');
+    Is.assert(div.childElementCount, 2);
+  })
+
+
 });

@@ -1,130 +1,170 @@
 const Is = require('is');
 const fail = require('../util/fail');
 
-
 describe('Events', () => {
-  const el = x => document.createElement(x)
+  const el = (x, html) => {
+    let node = document.createElement(x)
+    html  && (node.innerHTML=html)
+    return node
+  }
+  function emit(name, node) {
+      node.dispatchEvent(new MouseEvent(name, {view: window, bubbles: true, cancelable: true}));
+    }
 
   describe('base', () => {
     let ul = el('ul');
-
     it('should have "on" method', () => Is.must.be.func(Element.prototype.on));
     it('should have "off" method', () => Is.must.be.func(Element.prototype.off));
-
-    it('should throw when called without event name', () => {
-      let err = fail(ul.on, [], ul);
-      Is.must.be.err(err)
-    });
-
-    it('should throw when called without callback', () => {
-      let err = fail(ul.on, [ 'click' ], ul);
-      Is.must.be.err(err)
-    })
+    it('should throw when called without event name', () => Is.must.be.err(fail(ul.on, [], ul)));
+    it('should throw when called without callback', () => Is.must.be.err(fail(ul.on, [ 'click' ], ul)))
   });
 
   describe('on', () => {
     it('should add event and return element', () => {
-      let div = el('div');
+      let node = el('div');
       let ctx = {};
-      let ret = div.on('click', function (e) {
+      let div = node.on('click', function(e) {
         Is.assert(this, ctx);
       }, ctx);
-
-      div.click();
-      Is.assert(ret, div)
+      emit('click', node);
+      Is.assert(div, node)
     });
+
     it('should delegate event', () => {
-      let div = el('div');
-      div.innerHTML = '<p></p><b></b>';
+      let node = el('div', '<p></p><b></b>');
 
-      div.on('click p', e => Is.assert(e.target.nodeName, 'P'));
-      div.on('click b', e => Is.assert(e.target.nodeName, 'B'));
+      node.on('click p', e => Is.assert(e.target.nodeName, 'P'));
+      node.on('click b', e => Is.assert(e.target.nodeName, 'B'));
 
-      div.firstElementChild.click();
-      div.lastElementChild.click();
+      emit('click', node.firstElementChild);
+      emit('click', node.lastElementChild);
     })
   });
 
   describe('once', () => {
-    let div = el('div');
-    let count = 0;
-    div.once('click', e => count += 1);
-    it('should emit once', () => {
-      div.click();
-      Is.assert(1, count);
-      div.click();
-      Is.assert(1, count);
-    })
+    let i = 0, node = el('div');
+    node.once('click', e => i += 1);
+    emit('click', node);
+    emit('click', node);
+    it('should emit once', () => Is.assert(1, i, `actual: ${ i }, expected: 1`))
   });
 
   describe('off', () => {
-    function emit(name, el) {
-      let e = new MouseEvent(name, {view: window, bubbles: true, cancelable: true});
-      el.dispatchEvent(e);
-    }
-
-    let div = el('div');
-    div.innerHTML = '<p></p><b></b>';
-
-    let p = div.firstElementChild;
-    let b = div.lastElementChild;
-
-    let count = {
-      click   : {p: 0, b: 0},
-      dblclick: {p: 0, b: 0},
-      wheel   : {p: 0, b: 0},
-      cb      : 0
-    };
-
-    let cb = e => count.cb += 1;
-    div.on('click b', e => count.click.b += 1);
-    div.on('click p', e => count.click.p += 1);
-    div.on('dblclick b', e => count.dblclick.b += 1);
-    div.on('dblclick p', e => count.dblclick.p += 1);
-    div.on('wheel b,p', cb);
-
     it('should remove all clicks', () => {
-      emit('click', p);
-      emit('click', b);
-      div.off('click');
-      emit('click', p);
-      emit('click', b);
-      Is.assert(count.click.p, 1);
-      Is.assert(count.click.b, 1)
+      let node = el('div', '<p></p><b></b>');
+      let cnt = {
+        cl: { p: 0, b: 0 },
+        db: { p: 0, b: 0 }}
+
+      node.on('click b'   , e => cnt.cl.b += 1);
+      node.on('click p'   , e => cnt.cl.p += 1);
+      node.on('dblclick b', e => cnt.db.b += 1);
+      node.on('dblclick p', e => cnt.db.p += 1);
+
+      emit('click',    node.firstElementChild);
+      emit('click',    node.lastElementChild);
+      emit('dblclick', node.firstElementChild);
+      emit('dblclick', node.lastElementChild);
+
+      node.off('click');
+
+      emit('click',    node.firstElementChild);
+      emit('click',    node.lastElementChild);
+      emit('dblclick', node.firstElementChild);
+      emit('dblclick', node.lastElementChild);
+
+      Is.assert(1, cnt.cl.b, `cl b actual: ${ cnt.cl.b }, expected: 1`);
+      Is.assert(1, cnt.cl.p, `cl p actual: ${ cnt.cl.p }, expected: 1`);
+      Is.assert(2, cnt.db.b, `db b actual: ${ cnt.db.b }, expected: 2`);
+      Is.assert(2, cnt.db.p, `db p actual: ${ cnt.db.p }, expected: 2`);
     });
 
     it('should remove dblclick with selector', () => {
-      emit('dblclick', p);
-      emit('dblclick', b);
-      div.off('dblclick p');
-      emit('dblclick', p);
-      emit('dblclick', b);
-      Is.assert(count.dblclick.p, 1);
-      Is.assert(count.dblclick.b, 2)
+      let node = el('div', '<p></p><b></b>');
+      let cnt = {
+        cl: { p: 0, b: 0 },
+        db: { p: 0, b: 0 }}
+
+      node.on('click b'   , e => cnt.cl.b += 1);
+      node.on('click p'   , e => cnt.cl.p += 1);
+      node.on('dblclick b', e => cnt.db.b += 1);
+      node.on('dblclick p', e => cnt.db.p += 1);
+
+      emit('click',    node.firstElementChild);
+      emit('click',    node.lastElementChild);
+      emit('dblclick', node.firstElementChild);
+      emit('dblclick', node.lastElementChild);
+
+      node.off('dblclick p');
+
+      emit('click',    node.firstElementChild);
+      emit('click',    node.lastElementChild);
+      emit('dblclick', node.firstElementChild);
+      emit('dblclick', node.lastElementChild);
+
+      Is.assert(2, cnt.cl.b, `cl b actual: ${ cnt.cl.b }, expected: 2`);
+      Is.assert(2, cnt.cl.p, `cl p actual: ${ cnt.cl.p }, expected: 2`);
+      Is.assert(2, cnt.db.b, `db b actual: ${ cnt.db.b }, expected: 2`);
+      Is.assert(1, cnt.db.p, `db p actual: ${ cnt.db.p }, expected: 1`);
     });
 
     it('should remove by callback', () => {
-      emit('wheel', p);
-      emit('wheel', b);
-      div.off(cb);
-      emit('wheel', p);
-      emit('wheel', b);
-      Is.assert(count.cb, 2)
+      let node = el('div', '<p></p><b></b>');
+      let cnt = {
+        cl: { p: 0, b: 0 },
+        db: { p: 0, b: 0 }}
+      let handler = e => cnt.db.p += 1
+
+      node.on('click b'   , e => cnt.cl.b += 1);
+      node.on('click p'   , e => cnt.cl.p += 1);
+      node.on('dblclick b', e => cnt.db.b += 1);
+      node.on('dblclick p', handler);
+
+      emit('click',    node.firstElementChild);
+      emit('click',    node.lastElementChild);
+      emit('dblclick', node.firstElementChild);
+      emit('dblclick', node.lastElementChild);
+
+      node.off(handler);
+
+      emit('click',    node.firstElementChild);
+      emit('click',    node.lastElementChild);
+      emit('dblclick', node.firstElementChild);
+      emit('dblclick', node.lastElementChild);
+
+      Is.assert(2, cnt.cl.b, `cl b actual: ${ cnt.cl.b }, expected: 2`);
+      Is.assert(2, cnt.cl.p, `cl p actual: ${ cnt.cl.p }, expected: 2`);
+      Is.assert(2, cnt.db.b, `db b actual: ${ cnt.db.b }, expected: 2`);
+      Is.assert(1, cnt.db.p, `db p actual: ${ cnt.db.p }, expected: 1`);
     });
 
     it('should remove all', () => {
-      div.off();
-      emit('click', p);
-      emit('click', b);
-      emit('dblclick', p);
-      emit('dblclick', b);
-      emit('wheel', p);
-      emit('wheel', b);
-      Is.assert(count.click.p, 1);
-      Is.assert(count.click.b, 1);
-      Is.assert(count.dblclick.p, 1);
-      Is.assert(count.dblclick.b, 2);
-      Is.assert(count.cb, 2)
+      let node = el('div', '<p></p><b></b>');
+      let cnt = {
+        cl: { p: 0, b: 0 },
+        db: { p: 0, b: 0 }}
+
+      node.on('click b',    e => cnt.cl.b += 1);
+      node.on('click p',    e => cnt.cl.p += 1);
+      node.on('dblclick b', e => cnt.db.b += 1);
+      node.on('dblclick p', e => cnt.db.p += 1);
+
+      emit('click',    node.firstElementChild);
+      emit('click',    node.lastElementChild);
+      emit('dblclick', node.firstElementChild);
+      emit('dblclick', node.lastElementChild);
+
+      node.off();
+
+      emit('click',    node.firstElementChild);
+      emit('click',    node.lastElementChild);
+      emit('dblclick', node.firstElementChild);
+      emit('dblclick', node.lastElementChild);
+
+      Is.assert(1, cnt.cl.b, `cl b actual: ${ cnt.cl.b }, expected: 1`);
+      Is.assert(1, cnt.cl.p, `cl p actual: ${ cnt.cl.p }, expected: 1`);
+      Is.assert(1, cnt.db.b, `db b actual: ${ cnt.db.b }, expected: 1`);
+      Is.assert(1, cnt.db.p, `db p actual: ${ cnt.db.p }, expected: 1`);
     })
   });
 });

@@ -1,38 +1,34 @@
-const declare = require('declare');
-const { on, once, off, STORE } = require('./events');
-const { insert, append, prepend, before, after } = require('./insert');
-const aliases = require('./aliases');
+const Is = require('is').use('el', x => x instanceof Element)
+const Dec = require('declare')
+const { get, set, empty, query } = require('./html')
+const { on, off, once, unbind } = require('./events')
+const { insert, append, prepend, after, before } = require('./insert')
 
-aliases.forEach(([ src, name, alias, ...targets ]) => {
-  let ctor = self[ src ].prototype
-  targets.forEach(trg => {
-    declare.alias(ctor, name, alias, self[ trg ].prototype)
-  })
-});
+Dec.method(Element.prototype, 'empty'   , empty)
+Dec.method(Element.prototype, 'query'   , query)
+Dec.method(Element.prototype, 'insert'  , insert)
+Dec.method(Element.prototype, 'append'  , append)
+Dec.method(Element.prototype, 'prepend' , prepend)
+Dec.method(Element.prototype, 'after'   , after)
+Dec.method(Element.prototype, 'before'  , before)
+Dec.method(Element.prototype, 'on'      , on)
+Dec.method(Element.prototype, 'once'    , once)
+Dec.method(Element.prototype, 'off'     , off)
+Dec.accessor(Element.prototype, 'html'  , get, set)
 
-exports.find = document.querySelector.bind(document)
-exports.query = document.querySelectorAll.bind(document)
+Dec.method(Document.prototype, 'unbind' , unbind)
+Dec.method(Document.prototype, 'query'  , query)
 
-declare.getter(Element, 'STORE', () => STORE);
-declare.method(Element.prototype, 'on', on);
-declare.method(Element.prototype, 'once', once);
-declare.method(Element.prototype, 'off', off);
+Dec.alias(Document.prototype, 'query', '$')
+Dec.alias(Document.prototype, 'querySelector', 'find')
 
-declare.method(Element.prototype, 'insert', insert);
-declare.method(Element.prototype, 'append', append);
-declare.method(Element.prototype, 'prepend', prepend);
-declare.method(Element.prototype, 'after', after);
-declare.method(Element.prototype, 'before', before);
+Dec.alias(Element.prototype, 'query', '$')
+Dec.alias(Element.prototype, 'querySelector', 'find')
 
-declare.method(Element.prototype, 'empty', function empty(first) {
-  while (first = this.firstChild)
-    this.removeChild('function' === typeof first.off ? first.off() : first);
-  return this;
-});
+Dec.alias(Element.prototype, 'lastElementChild', 'last')
+Dec.alias(Element.prototype, 'firstElementChild', 'first')
+Dec.alias(Element.prototype, 'nextElementSibling', 'next')
+Dec.alias(Element.prototype, 'previousElementSibling', 'prev')
 
-declare.accessor(Element.prototype, 'html', function() {
-  return this.innerHTML
-}, function(str) {
-  return this.empty().append(str)
-});
-
+Dec.alias(Node.prototype, 'textContent', 'text')
+Dec.alias(Node.prototype, 'parentElement', 'parent')

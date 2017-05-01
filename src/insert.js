@@ -1,17 +1,12 @@
 'use strict';
-exports.insert = function insert(x, position = 'beforeEnd') {
-  this[ x instanceof Element ? 'insertAdjacentElement' : 'insertAdjacentHTML' ](position, x);
-  return this
-};
-exports.append = function append(x) {
-  return this.insert(x, 'beforeEnd')
-};
-exports.prepend = function prepend(x) {
-  return this.insert(x, 'afterBegin')
-};
-exports.after = function after(x) {
-  return this.insert(x, 'afterEnd')
-};
-exports.before = function before(x) {
-  return this.insert(x, 'beforeBegin')
-};
+const Is = require('is')
+module.exports = {
+  insert(x, pos) {
+      this[ Is.el(x) ? 'insertAdjacentElement' : 'insertAdjacentHTML' ](pos||'beforeEnd', x);
+      return this
+    },
+  append(x) { return this.insert(x, 'beforeEnd') },
+  prepend(x) { return this.insert(x, 'afterBegin') },
+  after(x) { return this.insert(x, 'afterEnd') },
+  before(x) { return this.insert(x, 'beforeBegin') }
+}
