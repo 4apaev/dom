@@ -1,4 +1,4 @@
-const Is = require('is');
+const Is = require('../src/is')
 const fail = require('../util/fail');
 
 describe('Events', () => {

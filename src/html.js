@@ -1,5 +1,4 @@
-'use strict';
-const Is = require('is')
+const Is = require('./is')
 module.exports = {
   empty() {
     while (this.firstChild)

@@ -1,4 +1,4 @@
-const Is = require('is')
+const Is = require('../src/is')
 
 describe('Attrs',  () => {
   it('should have "attr" method', () => Is.must.be.func(Element.prototype.attr))

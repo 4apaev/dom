@@ -1,36 +1,27 @@
 {
-  "name"       : "dom",
-  "version"    : "0.0.1",
+  "name": "dom",
+  "version": "0.0.1",
   "description": "dom util",
-  "author"     : "4apaev",
-  "repository" : {
-    "type" : "git",
+  "author": "4apaev",
+  "repository": {
+    "type": "git",
     "url": "git@github.com:4apaev/dom.git"
   },
-  "license"    : "MIT",
-  "main"       : "src/index.js",
+  "license": "MIT",
+  "main": "src/index.js",
   "scripts": {
-
-    "clear"  :  "rm -f dist/*",
-    "js"     :  "browserify -d src/index.js -o dist/dom.js",
-    "mocha"  :  "browserify -d tests/index.js -o dist/test.js",
-    "pug"    :  "pug -P views -o dist",
-    "copy"   :  "cp node_modules/mocha/mocha.js node_modules/mocha/mocha.css dist",
-    "build"  :  "npm run clear && npm run js && npm run mocha && npm run pug && npm run copy",
-    "watch"  :  "node util/watch.js",
-
-    "es5"   : "babel --presets es2015 dist/dom.js -o dist/dom.es5.js",
-    "min"   : "uglifyjs dist/dom.es5.js --screw-ie8 -c -m -o dist/dom.es5.min.js"
+    "clear": "rm -f dist/*",
+    "js": "npx browserify -d src/index.js -o dist/dom.js",
+    "test": "npx browserify -d tests/index.js -o dist/test.js",
+    "copy": "cp node_modules/mocha/mocha.js node_modules/mocha/mocha.css views/test.html dist",
+    "build": "npm run clear && npm run js && npm run test && npm run copy",
+    "watch": "node util/watch.js",
+    "es5": "babel --presets es2015 dist/dom.js -o dist/dom.es5.js",
+    "min": "uglifyjs dist/dom.es5.js --screw-ie8 -c -m -o dist/dom.es5.min.js"
   },
-
   "devDependencies": {
-    "mocha": "latest"
+    "mocha": "^5.2.0",
+    "browserify": "^16.2.2"
   },
-
-  "dependencies": {
-    "is": "git@github.com:4apaev/is.git#mini",
-    "declare": "git@github.com:4apaev/declare.git#mini"
-  }
+  "dependencies": {}
 }
-
-

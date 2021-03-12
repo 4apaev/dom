@@ -1,6 +1,6 @@
-'use strict';
-const Is = require('is'), STORE = new WeakMap;
-module.exports = { on, off, once, unbind };
+const Is = require('./is')
+const STORE = new WeakMap
+module.exports = { on, off, once, emit, unbind };
 
 function on(str, cb, ctx) {
     Is.must.be.func(cb, `Dom:Event Callback must be a Function`);
@@ -19,6 +19,11 @@ function once(str, cb, ctx) {
     return this.on(str, func)
   }
 
+function emit(name, bubbles=true) {
+    this.dispatchEvent(new Event('change', { bubbles }))
+    return this
+  }
+
 function off(str, cb, ctx) {
   const store = STORE.get(this)
   if (str && store) {
@@ -26,9 +31,11 @@ function off(str, cb, ctx) {
       ctx = cb, cb = str, str = '';
     const [ name, selector ] = parse(str)
     remove(store, { name, selector, cb, ctx });
-  } else
+    Is.empty(store) && STORE.delete(this)
+  } else {
     store && store.forEach(e => e.off());
-  Is.empty(store) && STORE.delete(this)
+    STORE.delete(this)
+  }
   return this
 }
 

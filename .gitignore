@@ -1,6 +1,6 @@
-git st
+.DS_Store
 node_modules
-experiments
+build
+dist
 .idea
 *.log
-dist/*

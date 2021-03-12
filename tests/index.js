@@ -1,5 +1,5 @@
-window.Is = require('is')
-window.declare = require('declare')
+window.Is = require('../src/is')
+window.declare = require('../src/declare')
 
 require('./html')
 require('./empty')

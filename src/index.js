@@ -1,7 +1,7 @@
-const Is = require('is').use('el', x => x instanceof Element)
-const Dec = require('declare')
+const Is = require('./is').use('el', x => x instanceof Element)
+const Dec = require('./declare')
 const { get, set, empty, query } = require('./html')
-const { on, off, once, unbind } = require('./events')
+const { on, off, once, emit, unbind } = require('./events')
 const { insert, append, prepend, after, before } = require('./insert')
 
 Dec.method(Element.prototype, 'empty'   , empty)
@@ -14,6 +14,7 @@ Dec.method(Element.prototype, 'before'  , before)
 Dec.method(Element.prototype, 'on'      , on)
 Dec.method(Element.prototype, 'once'    , once)
 Dec.method(Element.prototype, 'off'     , off)
+Dec.method(Element.prototype, 'emit'    , emit)
 Dec.accessor(Element.prototype, 'html'  , get, set)
 
 Dec.method(Document.prototype, 'unbind' , unbind)

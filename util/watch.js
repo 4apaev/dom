@@ -1,5 +1,5 @@
 const exec = require('child_process').exec;
-const fs = require('fs');
+const fs = require('../src/fs');
 const cwd = process.cwd();
 
 const watch = (cmd, dir, msg) =>

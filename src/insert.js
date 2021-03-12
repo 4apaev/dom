@@ -1,5 +1,4 @@
-'use strict';
-const Is = require('is')
+const Is = require('./is')
 module.exports = {
   insert(x, pos) {
       this[ Is.el(x) ? 'insertAdjacentElement' : 'insertAdjacentHTML' ](pos||'beforeEnd', x);

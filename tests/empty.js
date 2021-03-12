@@ -1,4 +1,4 @@
-const Is = require('is');
+const Is = require('../src/is')
 
 
 describe('Empty', () => {
